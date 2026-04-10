@@ -125,54 +125,41 @@ async function updateISSPosition() {
     }
 }
 
-// Astronaut Nationality Mapping (Fallback hardcoded base)
-const ASTRONAUT_DATA = {
-    "Oleg Kononenko": { nat: "Russia", code: "ru" },
-    "Nikolai Chub": { nat: "Russia", code: "ru" },
-    "Tracy Caldwell Dyson": { nat: "USA", code: "us" },
-    "Matthew Dominick": { nat: "USA", code: "us" },
-    "Michael Barratt": { nat: "USA", code: "us" },
-    "Jeanette Epps": { nat: "USA", code: "us" },
-    "Alexander Grebenkin": { nat: "Russia", code: "ru" },
-    "Sunita Williams": { nat: "USA", code: "us" },
-    "Barry Wilmore": { nat: "USA", code: "us" },
-    // Potential others
-    "Loral O'Hara": { nat: "USA", code: "us" },
-    "Jasmin Moghbeli": { nat: "USA", code: "us" },
-    "Andreas Mogensen": { nat: "Denmark/ESA", code: "eu" },
-    "Satoshi Furukawa": { nat: "Japan", code: "jp" },
-    "Konstantin Borisov": { nat: "Russia", code: "ru" }
-};
+// True State of Humans in Space - April 2026 (From whoisinspace.com)
+const HUMANS_IN_SPACE = [
+    // Artemis II
+    { name: "Reid Wiseman", craft: "Orion", mission: "Artemis II", nat: "USA", code: "us" },
+    { name: "Victor J. Glover", craft: "Orion", mission: "Artemis II", nat: "USA", code: "us" },
+    { name: "Christina H. Koch", craft: "Orion", mission: "Artemis II", nat: "USA", code: "us" },
+    { name: "Jeremy R. Hansen", craft: "Orion", mission: "Artemis II", nat: "Canada", code: "ca" },
+    
+    // ISS - Soyuz MS-28
+    { name: "Christopher Williams", craft: "ISS", mission: "Soyuz MS-28", nat: "USA", code: "us" },
+    { name: "Sergey Kud-Sverchkov", craft: "ISS", mission: "Soyuz MS-28", nat: "Russia", code: "ru" },
+    { name: "Sergei Mikayev", craft: "ISS", mission: "Soyuz MS-28", nat: "Russia", code: "ru" },
+    
+    // ISS - SpaceX Crew-12
+    { name: "Jessica Meir", craft: "ISS", mission: "SpaceX Crew-12", nat: "USA", code: "us" },
+    { name: "Jack Hathaway", craft: "ISS", mission: "SpaceX Crew-12", nat: "USA", code: "us" },
+    { name: "Sophie Adenot", craft: "ISS", mission: "SpaceX Crew-12", nat: "France", code: "fr" },
+    { name: "Andrey Fedyaev", craft: "ISS", mission: "SpaceX Crew-12", nat: "Russia", code: "ru" },
+    
+    // Tiangong - Shenzhou 21
+    { name: "Zhang Lu", craft: "Tiangong", mission: "Shenzhou 21", nat: "China", code: "cn" },
+    { name: "Wu Fei", craft: "Tiangong", mission: "Shenzhou 21", nat: "China", code: "cn" },
+    { name: "Zhang Hongzhang", craft: "Tiangong", mission: "Shenzhou 21", nat: "China", code: "cn" },
+];
 
-function getAstronautDetails(name) {
-    const data = ASTRONAUT_DATA[name];
-    if (data) {
-        return {
-            nationality: data.nat,
-            flagUrl: `https://flagcdn.com/${data.code}.svg`
-        };
-    }
-    // Fallback if not found
-    return {
-        nationality: "International",
-        flagUrl: "https://flagcdn.com/un.svg" // UN flag as generic fallback
-    };
-}
-
-async function fetchCrew() {
+function fetchCrew() {
     try {
-        const response = await fetch(URL_ASTROS);
-        const data = await response.json();
-        
         // Filter strictly for ISS
-        const issCrew = data.people.filter(p => p.craft === 'ISS');
+        const issCrew = HUMANS_IN_SPACE.filter(p => p.craft === 'ISS');
         
         elements.crewCount.textContent = `${issCrew.length} ONBOARD`;
-        
         elements.crewList.innerHTML = '';
         
         issCrew.forEach((person, index) => {
-            const details = getAstronautDetails(person.name);
+            const flagUrl = `https://flagcdn.com/${person.code}.svg`;
             
             const li = document.createElement('li');
             li.className = 'crew-item';
@@ -185,19 +172,70 @@ async function fetchCrew() {
                 <div class="crew-info">
                     <div class="crew-name">${person.name}</div>
                     <div class="crew-nat">
-                        <img src="${details.flagUrl}" class="flag" alt="${details.nationality} Flag" title="${details.nationality}">
-                        <span class="crew-role">${details.nationality}</span>
+                        <img src="${flagUrl}" class="flag" alt="${person.nat} Flag" title="${person.nat}">
+                        <span class="crew-role">${person.nat} | ${person.mission}</span>
                     </div>
                 </div>
             `;
             elements.crewList.appendChild(li);
         });
         
+        // Render All Humans in Space Section
+        renderAllHumans();
+        
         lucide.createIcons();
         
     } catch (error) {
-        console.error("Error fetching Crew:", error);
-        elements.crewList.innerHTML = `<div class="loader" style="color:var(--danger)">COMMUNICATION ERROR</div>`;
+        console.error("Error setting Crew:", error);
+        elements.crewList.innerHTML = `<div class="loader" style="color:var(--danger)">SYSTEM ERROR</div>`;
+    }
+}
+
+function renderAllHumans() {
+    const totalCountEl = document.getElementById('total-humans-count');
+    const gridEl = document.getElementById('all-astronauts-grid');
+    
+    if(!totalCountEl || !gridEl) return;
+    
+    totalCountEl.textContent = `${HUMANS_IN_SPACE.length} TOTAL`;
+    gridEl.innerHTML = '';
+    
+    // Group by mission
+    const missions = {};
+    HUMANS_IN_SPACE.forEach(p => {
+        if (!missions[p.mission]) {
+            missions[p.mission] = { craft: p.craft, members: [] };
+        }
+        missions[p.mission].members.push(p);
+    });
+    
+    for (const [missionName, data] of Object.entries(missions)) {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'spacecraft-group';
+        
+        let membersHTML = '';
+        data.members.forEach(m => {
+            membersHTML += `
+                <div class="crew-item" style="margin-bottom: 0.5rem; background: rgba(0,0,0,0.5);">
+                    <img src="https://flagcdn.com/${m.code}.svg" class="flag" style="width: 20px;">
+                    <div class="crew-info" style="margin-left: 10px;">
+                        <div class="crew-name" style="font-size: 0.95rem;">${m.name}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        groupDiv.innerHTML = `
+            <div class="spacecraft-header">
+                <span>${data.craft}</span>
+                <span class="spacecraft-mission">${missionName}</span>
+            </div>
+            <div class="spacecraft-members">
+                ${membersHTML}
+            </div>
+        `;
+        
+        gridEl.appendChild(groupDiv);
     }
 }
 

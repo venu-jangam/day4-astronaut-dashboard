@@ -495,3 +495,37 @@ body {
 .leaflet-container {
     background: #040814;
 }
+
+/* All Astronauts Section */
+.all-astronauts-panel {
+    margin-top: 1rem;
+}
+
+.all-astronauts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.spacecraft-group {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.spacecraft-header {
+    font-family: var(--font-heading);
+    color: var(--highlight);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+    padding-bottom: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.spacecraft-mission {
+    color: #fff;
+}
+
