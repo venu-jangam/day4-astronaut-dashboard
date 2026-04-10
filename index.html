@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISS Mission Operations Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div id="particle-container"></div>
+    
+    <div class="dashboard-wrapper">
+        <header class="dashboard-header">
+            <div class="title-container">
+                <i data-lucide="satellite" class="header-icon"></i>
+                <div class="header-text">
+                    <h1>ISS OPERATIONS COMMAND</h1>
+                    <p class="subtitle">REAL-TIME ORBITAL TRACKING SYSTEM</p>
+                </div>
+            </div>
+            
+            <div class="status-indicator">
+                <div class="blinking-dot"></div>
+                <span>SYSTEM ONLINE</span>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <section class="panel map-panel">
+                <div class="panel-header">
+                    <h2><i data-lucide="map" class="panel-icon"></i> TACTICAL MAP</h2>
+                    <span id="coordinates-display" class="coordinates">LAT: -- | LNG: --</span>
+                </div>
+                <div class="panel-content map-container">
+                    <div id="iss-map"></div>
+                    <div class="map-overlay">
+                        <div class="crosshair crosshair-vertical"></div>
+                        <div class="crosshair crosshair-horizontal"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel telemetry-panel">
+                <div class="panel-header">
+                    <h2><i data-lucide="activity" class="panel-icon"></i> ORBITAL TELEMETRY</h2>
+                </div>
+                <div class="panel-content telemetry-grid">
+                    <div class="telemetry-card">
+                        <i data-lucide="arrow-up" class="tel-icon"></i>
+                        <span class="tel-label">ALTITUDE</span>
+                        <span id="alt-value" class="tel-value">--.-</span>
+                        <span class="tel-unit">KM</span>
+                    </div>
+                    <div class="telemetry-card">
+                        <i data-lucide="wind" class="tel-icon"></i>
+                        <span class="tel-label">VELOCITY</span>
+                        <span id="vel-value" class="tel-value">--.-</span>
+                        <span class="tel-unit">KM/H</span>
+                    </div>
+                    <div class="telemetry-card">
+                        <i data-lucide="clock" class="tel-icon"></i>
+                        <span class="tel-label">ORBIT PERIOD</span>
+                        <span id="orb-value" class="tel-value">~92.9</span>
+                        <span class="tel-unit">MIN</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel crew-panel">
+                <div class="panel-header">
+                    <h2><i data-lucide="users" class="panel-icon"></i> CREW MANIFEST</h2>
+                    <span id="crew-count" class="badge">-- ONBOARD</span>
+                </div>
+                <div class="panel-content crew-list-container">
+                    <ul id="crew-list" class="crew-list">
+                        <!-- Crew items will be populated by JS -->
+                        <div class="loader">Deploying Manifest...</div>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="main.js"></script>
+</body>
+</html>
